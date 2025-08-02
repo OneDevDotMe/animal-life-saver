@@ -61,8 +61,9 @@ export function TopRescueCenters() {
         contentContainerStyle={styles.centersList}
         testID="top-rescue-centers-scroll"
         decelerationRate="fast"
-        snapToInterval={cardWidth + 12}
+        snapToInterval={cardWidth + 4}
         snapToAlignment="start"
+        pagingEnabled={false}
       >
         {topRescueCenters && topRescueCenters.length > 0 ? topRescueCenters.map((center) => (
           <TouchableOpacity 
@@ -72,7 +73,7 @@ export function TopRescueCenters() {
             testID={`rescue-center-card-${center.id}`}
           >
             <View style={styles.badgeContainer}>
-              <Award color={Colors.white} size={16} />
+              <Award color={Colors.white} size={12} />
             </View>
             
             <Image 
@@ -82,8 +83,10 @@ export function TopRescueCenters() {
             
             <Text style={styles.centerName}>{center.name}</Text>
             <View style={styles.locationRow}>
-              <MapPin color={Colors.textSecondary} size={12} />
-              <Text style={styles.centerLocation}>{center.location}</Text>
+              <MapPin color={Colors.textSecondary} size={10} />
+              <Text style={styles.centerLocation}>
+                {center.location.split(',')[0]}, {center.location.split(',').pop()?.trim()}
+              </Text>
             </View>
             <Text style={styles.rescuesCount}>{center.rescuesCount} rescues</Text>
           </TouchableOpacity>
@@ -97,7 +100,7 @@ export function TopRescueCenters() {
   );
 }
 
-const cardWidth = Math.min(160, Math.max(140, screenWidth * 0.35));
+const cardWidth = Math.min(200);
 
 const styles = StyleSheet.create({
   container: {
@@ -121,16 +124,16 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   centersList: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 12,
     paddingBottom: 8,
   },
   centerCard: {
     width: cardWidth,
     alignItems: "center",
-    marginHorizontal: 6,
+    marginHorizontal: 2,
     backgroundColor: Colors.white,
     borderRadius: 12,
-    padding: 12,
+    padding: 18,
     ...Platform.select({
       ios: {
         shadowColor: Colors.shadow,
@@ -145,41 +148,41 @@ const styles = StyleSheet.create({
   },
   badgeContainer: {
     position: "absolute",
-    top: 8,
-    right: 8,
+    top: 6,
+    right: 6,
     backgroundColor: Colors.primary,
-    borderRadius: 12,
-    width: 24,
-    height: 24,
+    borderRadius: 10,
+    width: 20,
+    height: 20,
     justifyContent: "center",
     alignItems: "center",
     zIndex: 1,
   },
   centerImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    marginBottom: 8,
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    marginBottom: 6,
   },
   centerName: {
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
     color: Colors.text,
     textAlign: "center",
-    marginBottom: 4,
+    marginBottom: 2,
   },
   locationRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4,
+    marginBottom: 2,
   },
   centerLocation: {
-    fontSize: 12,
+    fontSize: 10,
     color: Colors.textSecondary,
     marginLeft: 2,
   },
   rescuesCount: {
-    fontSize: 12,
+    fontSize: 10,
     color: Colors.textSecondary,
     textAlign: "center",
   },
