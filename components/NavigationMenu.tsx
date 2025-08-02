@@ -35,7 +35,6 @@ import {
 } from "lucide-react-native";
 import Colors from "@/constants/colors";
 import { useBlogCategories } from "@/hooks/useBlogCategories";
-import { useSocialLinks } from "@/hooks/useSocialLinks";
 
 interface NavigationMenuProps {
   isVisible: boolean;
@@ -44,28 +43,30 @@ interface NavigationMenuProps {
 
 export function NavigationMenu({ isVisible, onClose }: NavigationMenuProps) {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'menu' | 'donate' | 'knowledgeBase' | 'socialLinks'>('menu');
-  const [donateAmount, setDonateAmount] = useState('');
+  const [activeTab, setActiveTab] = useState<'menu' | 'donate' | 'knowledgeBase'>('menu');
+  const [selectedAmount, setSelectedAmount] = useState<string>('');
+  const [customAmount, setCustomAmount] = useState<string>('');
   const [donorName, setDonorName] = useState('');
   const [donorEmail, setDonorEmail] = useState('');
   
   const { data: blogCategories, isLoading: categoriesLoading } = useBlogCategories();
-  const { data: socialLinks, isLoading: socialLinksLoading } = useSocialLinks();
 
   const handleDonate = () => {
-    if (!donateAmount || !donorName || !donorEmail) {
+    const amount = selectedAmount === 'custom' ? customAmount : selectedAmount;
+    if (!amount || !donorName || !donorEmail) {
       Alert.alert("Missing Information", "Please fill in all fields.");
       return;
     }
     
     Alert.alert(
       "Thank You!",
-      `Thank you ${donorName} for your generous donation of $${donateAmount}. We'll send a confirmation to ${donorEmail}.`,
+      `Thank you ${donorName} for your generous donation of $${amount}. We'll send a confirmation to ${donorEmail}.`,
       [{ text: "OK", onPress: onClose }]
     );
     
     // Reset form
-    setDonateAmount('');
+    setSelectedAmount('');
+    setCustomAmount('');
     setDonorName('');
     setDonorEmail('');
     setActiveTab('menu');
@@ -73,7 +74,11 @@ export function NavigationMenu({ isVisible, onClose }: NavigationMenuProps) {
 
   const handleNavigate = (route: string) => {
     onClose();
-    router.push(route);
+    router.push(route as any);
+  };
+
+  const handleSocialLink = (url: string) => {
+    Linking.openURL(url);
   };
 
   const renderMenu = () => (
@@ -121,24 +126,47 @@ export function NavigationMenu({ isVisible, onClose }: NavigationMenuProps) {
 
       <TouchableOpacity 
         style={styles.menuItem}
-        onPress={() => setActiveTab('socialLinks')}
-      >
-        <Users color={Colors.primary} size={24} />
-        <Text style={styles.menuItemText}>Social Links</Text>
-        <ChevronRight color={Colors.text} size={16} style={{ marginLeft: 'auto' }} />
-      </TouchableOpacity>
-
-      <TouchableOpacity 
-        style={styles.menuItem}
         onPress={() => setActiveTab('donate')}
       >
         <Heart color={Colors.primary} size={24} />
         <Text style={styles.menuItemText}>Donate</Text>
       </TouchableOpacity>
+
+      {/* Social Links */}
+      <View style={styles.socialLinksContainer}>
+        <Text style={styles.socialLinksTitle}>Follow Us</Text>
+        <View style={styles.socialIconsContainer}>
+          <TouchableOpacity 
+            style={styles.socialIcon}
+            onPress={() => handleSocialLink('https://facebook.com/animallifesaver')}
+          >
+            <Facebook color={Colors.primary} size={24} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.socialIcon}
+            onPress={() => handleSocialLink('https://instagram.com/animallifesaver')}
+          >
+            <Instagram color={Colors.primary} size={24} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.socialIcon}
+            onPress={() => handleSocialLink('https://twitter.com/animallifesaver')}
+          >
+            <Twitter color={Colors.primary} size={24} />
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={styles.socialIcon}
+            onPress={() => handleSocialLink('https://youtube.com/animallifesaver')}
+          >
+            <Youtube color={Colors.primary} size={24} />
+          </TouchableOpacity>
+        </View>
+      </View>
     </View>
   );
-
-
 
   const renderDonate = () => (
     <ScrollView style={styles.contentContainer}>
@@ -148,14 +176,54 @@ export function NavigationMenu({ isVisible, onClose }: NavigationMenuProps) {
       </Text>
       
       <View style={styles.donateForm}>
-        <Text style={styles.formLabel}>Donation Amount ($)</Text>
-        <TextInput
-          style={styles.textInput}
-          value={donateAmount}
-          onChangeText={setDonateAmount}
-          placeholder="Enter amount"
-          keyboardType="numeric"
-        />
+        <Text style={styles.formLabel}>Choose Donation Amount</Text>
+        
+        <View style={styles.amountOptions}>
+          <TouchableOpacity 
+            style={[styles.amountOption, selectedAmount === '30' && styles.amountOptionSelected]}
+            onPress={() => setSelectedAmount('30')}
+          >
+            <Text style={[styles.amountText, selectedAmount === '30' && styles.amountTextSelected]}>$30</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.amountOption, selectedAmount === '100' && styles.amountOptionSelected]}
+            onPress={() => setSelectedAmount('100')}
+          >
+            <Text style={[styles.amountText, selectedAmount === '100' && styles.amountTextSelected]}>$100</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.amountOption, selectedAmount === '500' && styles.amountOptionSelected]}
+            onPress={() => setSelectedAmount('500')}
+          >
+            <Text style={[styles.amountText, selectedAmount === '500' && styles.amountTextSelected]}>$500</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity 
+            style={[styles.amountOption, selectedAmount === '1000' && styles.amountOptionSelected]}
+            onPress={() => setSelectedAmount('1000')}
+          >
+            <Text style={[styles.amountText, selectedAmount === '1000' && styles.amountTextSelected]}>$1000</Text>
+          </TouchableOpacity>
+        </View>
+        
+        <TouchableOpacity 
+          style={[styles.amountOption, selectedAmount === 'custom' && styles.amountOptionSelected]}
+          onPress={() => setSelectedAmount('custom')}
+        >
+          <Text style={[styles.amountText, selectedAmount === 'custom' && styles.amountTextSelected]}>Custom Amount</Text>
+        </TouchableOpacity>
+        
+        {selectedAmount === 'custom' && (
+          <TextInput
+            style={styles.textInput}
+            value={customAmount}
+            onChangeText={setCustomAmount}
+            placeholder="Enter custom amount"
+            keyboardType="numeric"
+          />
+        )}
         
         <Text style={styles.formLabel}>Your Name</Text>
         <TextInput
@@ -184,6 +252,7 @@ export function NavigationMenu({ isVisible, onClose }: NavigationMenuProps) {
       </View>
     </ScrollView>
   );
+
   const renderKnowledgeBase = () => (
     <ScrollView style={styles.contentContainer}>
       <Text style={styles.contentTitle}>Knowledge Base Categories</Text>
@@ -192,39 +261,13 @@ export function NavigationMenu({ isVisible, onClose }: NavigationMenuProps) {
           <Text style={styles.contentText}>Loading...</Text>
         ) : (
           blogCategories?.map(category => (
-                                  <TouchableOpacity
-                        key={category.id}
-                        style={styles.menuItem}
-                        onPress={() => handleNavigate(`/category/${category.slug}`)}
-                      >
+            <TouchableOpacity
+              key={category.id}
+              style={styles.menuItem}
+              onPress={() => handleNavigate(`/category/${category.slug}`)}
+            >
               <BookOpen color={Colors.primary} size={24} />
               <Text style={styles.menuItemText}>{category.name}</Text>
-            </TouchableOpacity>
-          ))
-        )
-      }
-    </ScrollView>
-  );
-
-  const renderSocialLinks = () => (
-    <ScrollView style={styles.contentContainer}>
-      <Text style={styles.contentTitle}>Social Links</Text>
-      {
-        socialLinksLoading ? (
-          <Text style={styles.contentText}>Loading...</Text>
-        ) : (
-          socialLinks?.map(link => (
-            <TouchableOpacity
-              key={link.id}
-              style={styles.menuItem}
-              onPress={() => Linking.openURL(link.url)}
-            >
-              {link.iconName === 'facebook' && <Facebook color={Colors.primary} size={24} />}
-              {link.iconName === 'instagram' && <Instagram color={Colors.primary} size={24} />}
-              {link.iconName === 'twitter' && <Twitter color={Colors.primary} size={24} />}
-              {link.iconName === 'youtube' && <Youtube color={Colors.primary} size={24} />}
-              {link.iconName === 'message-circle' && <MessageCircle color={Colors.primary} size={24} />}
-              <Text style={styles.menuItemText}>{link.name}</Text>
             </TouchableOpacity>
           ))
         )
@@ -238,8 +281,6 @@ export function NavigationMenu({ isVisible, onClose }: NavigationMenuProps) {
         return renderDonate();
       case 'knowledgeBase':
         return renderKnowledgeBase();
-      case 'socialLinks':
-        return renderSocialLinks();
       default:
         return renderMenu();
     }
@@ -266,8 +307,7 @@ export function NavigationMenu({ isVisible, onClose }: NavigationMenuProps) {
             <Text style={styles.headerTitle}>
               {activeTab === 'menu' ? 'Menu' : 
                activeTab === 'donate' ? 'Donate' :
-               activeTab === 'knowledgeBase' ? 'Knowledge Base' :
-               activeTab === 'socialLinks' ? 'Social Links' : 'Menu'}
+               activeTab === 'knowledgeBase' ? 'Knowledge Base' : 'Menu'}
             </Text>
             <TouchableOpacity style={styles.closeButton} onPress={onClose}>
               <X color={Colors.text} size={24} />
@@ -394,5 +434,50 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginLeft: 8,
+  },
+  amountOptions: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-around',
+    marginBottom: 16,
+  },
+  amountOption: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: Colors.border,
+    marginVertical: 8,
+  },
+  amountOptionSelected: {
+    backgroundColor: Colors.primary,
+    borderColor: Colors.primary,
+  },
+  amountText: {
+    fontSize: 16,
+    fontWeight: '500',
+    color: Colors.text,
+  },
+  amountTextSelected: {
+    color: Colors.white,
+  },
+  socialLinksContainer: {
+    marginTop: 20,
+    paddingTop: 16,
+    borderTopWidth: 1,
+    borderTopColor: Colors.border,
+  },
+  socialLinksTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: Colors.text,
+    marginBottom: 12,
+  },
+  socialIconsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  socialIcon: {
+    padding: 10,
   },
 }); 

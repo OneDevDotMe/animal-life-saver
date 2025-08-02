@@ -20,8 +20,8 @@ export function FeaturedProducts() {
   const { data: products, isLoading, error } = useProducts({ isFeatured: true, limit: 5 });
   const { addToCart } = useCart();
 
-  const navigateToSupport = () => {
-    router.push("/(tabs)/support");
+  const navigateToShop = () => {
+    router.push("/(tabs)/shop");
   };
 
   const handleAddToCart = (product: Product) => {
@@ -32,7 +32,7 @@ export function FeaturedProducts() {
     <View style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.title}>Featured Products</Text>
-        <TouchableOpacity onPress={navigateToSupport}>
+        <TouchableOpacity onPress={navigateToShop}>
           <Text style={styles.viewAllText}>View All</Text>
         </TouchableOpacity>
       </View>
@@ -53,25 +53,29 @@ export function FeaturedProducts() {
           </View>
         ) : products && products.length > 0 ? (
           products.slice(0, 5).map((product) => (
-          <View key={product.id} style={styles.productCard}>
+          <TouchableOpacity 
+            key={product.id} 
+            style={styles.productCard}
+            onPress={() => router.push(`/product/${product.slug}`)}
+          >
             <Image 
               source={{ uri: product.image_url }} 
               style={styles.productImage} 
             />
             
-                         <View style={styles.productInfo}>
-               <Text style={styles.productName}>{product.name}</Text>
-               <View style={styles.priceContainer}>
-                 {product.sale_price ? (
-                   <>
-                     <Text style={styles.salePrice}>${product.sale_price.toFixed(2)}</Text>
-                     <Text style={styles.originalPrice}>${product.price.toFixed(2)}</Text>
-                   </>
-                 ) : (
-                   <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
-                 )}
-               </View>
-             </View>
+            <View style={styles.productInfo}>
+              <Text style={styles.productName}>{product.name}</Text>
+              <View style={styles.priceContainer}>
+                {product.sale_price ? (
+                  <>
+                    <Text style={styles.salePrice}>${product.sale_price.toFixed(2)}</Text>
+                    <Text style={styles.originalPrice}>${product.price.toFixed(2)}</Text>
+                  </>
+                ) : (
+                  <Text style={styles.productPrice}>${product.price.toFixed(2)}</Text>
+                )}
+              </View>
+            </View>
             
             <TouchableOpacity 
               style={styles.addButton}
@@ -81,7 +85,7 @@ export function FeaturedProducts() {
               <ShoppingBag color={Colors.white} size={16} />
               <Text style={styles.addButtonText}>Add</Text>
             </TouchableOpacity>
-          </View>
+          </TouchableOpacity>
         ))
         ) : (
           <View style={styles.emptyContainer}>

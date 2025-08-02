@@ -6,12 +6,15 @@ import {
   ScrollView, 
   TouchableOpacity, 
   Image,
-  Platform
+  Platform,
+  Dimensions
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Award } from "lucide-react-native";
 import { useTopSaviours } from "@/hooks/useTopSaviours";
 import Colors from "@/constants/colors";
+
+const { width: screenWidth } = Dimensions.get('window');
 
 export function TopSaviours() {
   const router = useRouter();
@@ -38,7 +41,7 @@ export function TopSaviours() {
         <View style={styles.header}>
           <Text style={styles.title}>Top Saviours</Text>
         </View>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.errorText}>{error?.message || 'An error occurred'}</Text>
       </View>
     );
   }
@@ -57,6 +60,9 @@ export function TopSaviours() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.savioursList}
         testID="top-saviours-scroll"
+        decelerationRate="fast"
+        snapToInterval={cardWidth + 12}
+        snapToAlignment="start"
       >
         {topSaviours && topSaviours.length > 0 ? topSaviours.map((saviour) => (
           <TouchableOpacity 
@@ -87,6 +93,8 @@ export function TopSaviours() {
   );
 }
 
+const cardWidth = Math.min(140, Math.max(120, screenWidth * 0.3));
+
 const styles = StyleSheet.create({
   container: {
     marginVertical: 16,
@@ -109,13 +117,13 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   savioursList: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingBottom: 8,
   },
   saviourCard: {
-    width: 100,
+    width: cardWidth,
     alignItems: "center",
-    marginHorizontal: 4,
+    marginHorizontal: 6,
     backgroundColor: Colors.white,
     borderRadius: 12,
     padding: 12,

@@ -14,7 +14,7 @@ export function AboutSummary() {
   const router = useRouter();
 
   const navigateToAbout = () => {
-    router.push("/(tabs)/about");
+    router.push("/about");
   };
 
   return (

@@ -6,12 +6,15 @@ import {
   ScrollView, 
   TouchableOpacity, 
   Image,
-  Platform
+  Platform,
+  Dimensions
 } from "react-native";
 import { useRouter } from "expo-router";
 import { Award, MapPin } from "lucide-react-native";
 import { useTopRescueCenters } from "@/hooks/useTopRescueCenters";
 import Colors from "@/constants/colors";
+
+const { width: screenWidth } = Dimensions.get('window');
 
 export function TopRescueCenters() {
   const router = useRouter();
@@ -38,7 +41,7 @@ export function TopRescueCenters() {
         <View style={styles.header}>
           <Text style={styles.title}>Top Rescue Centers</Text>
         </View>
-        <Text style={styles.errorText}>{error}</Text>
+        <Text style={styles.errorText}>{error?.message || 'An error occurred'}</Text>
       </View>
     );
   }
@@ -57,6 +60,9 @@ export function TopRescueCenters() {
         showsHorizontalScrollIndicator={false}
         contentContainerStyle={styles.centersList}
         testID="top-rescue-centers-scroll"
+        decelerationRate="fast"
+        snapToInterval={cardWidth + 12}
+        snapToAlignment="start"
       >
         {topRescueCenters && topRescueCenters.length > 0 ? topRescueCenters.map((center) => (
           <TouchableOpacity 
@@ -91,6 +97,8 @@ export function TopRescueCenters() {
   );
 }
 
+const cardWidth = Math.min(160, Math.max(140, screenWidth * 0.35));
+
 const styles = StyleSheet.create({
   container: {
     marginVertical: 16,
@@ -113,13 +121,13 @@ const styles = StyleSheet.create({
     fontWeight: "500",
   },
   centersList: {
-    paddingHorizontal: 12,
+    paddingHorizontal: 16,
     paddingBottom: 8,
   },
   centerCard: {
-    width: 120,
+    width: cardWidth,
     alignItems: "center",
-    marginHorizontal: 4,
+    marginHorizontal: 6,
     backgroundColor: Colors.white,
     borderRadius: 12,
     padding: 12,

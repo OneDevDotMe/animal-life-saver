@@ -7,17 +7,23 @@ import {
   Platform
 } from "react-native";
 import { useRouter } from "expo-router";
-import { Heart, Building2, ShoppingBag } from "lucide-react-native";
+import { Heart, Building2, Package } from "lucide-react-native";
 import Colors from "@/constants/colors";
 
 export function SupportSection() {
   const router = useRouter();
 
-  const navigateToSupport = (tab: "donate" | "rescue-center" | "shop") => {
-    router.push({
-      pathname: "/(tabs)/support",
-      params: { tab },
-    });
+  const navigateToSupport = (tab: "donate" | "rescue-center" | "send-supplies") => {
+    if (tab === "rescue-center") {
+      router.push("/(tabs)/support?tab=rescue-center");
+    } else if (tab === "send-supplies") {
+      router.push("/(tabs)/support?tab=send-supplies");
+    } else {
+      router.push({
+        pathname: "/(tabs)/support",
+        params: { tab },
+      });
+    }
   };
 
   return (
@@ -55,15 +61,15 @@ export function SupportSection() {
         
         <TouchableOpacity 
           style={styles.card}
-          onPress={() => navigateToSupport("shop")}
-          testID="shop-card"
+          onPress={() => navigateToSupport("send-supplies")}
+          testID="send-supplies-card"
         >
           <View style={[styles.iconContainer, { backgroundColor: Colors.tertiary }]}>
-            <ShoppingBag color={Colors.white} size={24} />
+            <Package color={Colors.white} size={24} />
           </View>
-          <Text style={styles.cardTitle}>Shop</Text>
+          <Text style={styles.cardTitle}>Send Supplies</Text>
           <Text style={styles.cardDescription}>
-            Buy products that support our cause
+            Send supplies to rescue centers
           </Text>
         </TouchableOpacity>
       </View>

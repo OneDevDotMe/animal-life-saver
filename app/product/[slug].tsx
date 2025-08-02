@@ -156,7 +156,10 @@ export default function ProductScreen() {
           <Text style={styles.productName}>{product.name}</Text>
           
           {/* Rating */}
-          <View style={styles.ratingContainer}>
+          <TouchableOpacity 
+            style={styles.ratingContainer}
+            onPress={() => router.push(`/product-reviews/${product.id}`)}
+          >
             <View style={styles.stars}>
               {[1, 2, 3, 4, 5].map((star) => (
                 <Star
@@ -170,7 +173,7 @@ export default function ProductScreen() {
             <Text style={styles.ratingText}>
               {product.rating_average.toFixed(1)} ({product.rating_count} reviews)
             </Text>
-          </View>
+          </TouchableOpacity>
 
           {/* Price */}
           <View style={styles.priceContainer}>
